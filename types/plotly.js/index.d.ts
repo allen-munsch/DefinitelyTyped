@@ -13,6 +13,7 @@
 //                 Josh Miles <https://github.com/milesjos>
 //                 Pramod Mathai  <https://github.com/skippercool>
 //                 Takafumi Yamaguchi <https://github.com/zeroyoichihachi>
+//                 Allen Munsch <https://github.com/allen-munsch>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 // TypeScript Version: 2.3
 
@@ -185,6 +186,85 @@ export interface DownloadImgopts {
 	filename: string;
 }
 
+// from https://raw.githubusercontent.com/plotly/plotly.js/37e80cbc10ef8bf93b4dee1c1e7de043745da676/dist/plot-schema.json
+export interface GeoOpts {
+    domain: {
+    	// Sets the horizontal domain of this geo subplot (in plot fraction).
+		// Note that geo subplots are constrained by domain. In general, when `projection.scale` is set to 1.
+		// a map will fit either its x or y domain, but not both.
+	    x: [Datum, Datum],
+	    y: [Datum, Datum],
+	    row: Datum,
+	    column: Datum,
+    },
+	// Sets the resolution of the base layers. The values have units of km/mm e.g.
+	// 110 corresponds to a scale ratio of 1:110,000,000.
+    resolution: "110" | "50",
+	scope: "world" | "usa" | "europe" | "asia" | "africa" | "north america" | "south america",
+    projection: {
+	    type: "equirectangular" | "mercator" | "orthographic" | "natural earth" | "kavrayskiy7" | "miller" |
+			"robinson" | "eckert4" | "azimuthal equal area" | "azimuthal equidistant" | "conic equal area" |
+			"conic conformal" | "conic equidistant" | "gnomonic" | "stereographic" | "mollweide" | "hammer" |
+			"transverse mercator" | "albers usa" | "winkel tripel" | "aitoff" | "sinusoidal"
+		rotation: {
+	    	// Rotates the map along parallels (in degrees East). Defaults to the center of the `lonaxis.range` values.
+			lon: Datum,
+			// Rotates the map along meridians (in degrees North).
+			lat: Datum,
+			// Roll the map (in degrees) For example, a roll of "180" makes the map appear upside down.
+			roll: Datum,
+		},
+		parallels: Datum[],
+		scale: Datum
+    },
+	center: {
+		lon: Datum,
+		lat: Datum,
+	}
+	showcoastlines: boolean,
+	coastlinecolor: Color,
+	showland: boolean,
+	landcolor: Color,
+	showocean: boolean,
+	oceancolor: Color,
+	showlakes: boolean,
+	lakecolor: Color,
+	showrivers: boolean,
+	rivercolor: Color,
+	riverwidth: Datum,
+	showcounties: boolean,
+	countrycolor: Color,
+	countrywidth: number,
+	// Sets whether or not boundaries of subunits within countries (e.g. states, provinces) are drawn.
+	showsubunits: boolean,
+	subunitcolor: Color,
+	subunitwidth: number,
+	// Sets whether or not a frame is drawn around the map.
+	showframes: boolean,
+	framecolor: Color,
+	framewidth: number,
+	// Set the background color of the map
+	bgcolor: Color,
+    lonaxis: {
+		range: [Datum, Datum]
+		showgrid: boolean,
+		tick0: Datum,
+		dtick: Datum,
+		gridcolor: Color,
+		gridwidth: Datum,
+	},
+	lataxis: {
+		range: [Datum, Datum]
+		showgrid: boolean,
+		tick0: Datum,
+		dtick: Datum,
+		gridcolor: Color,
+		gridwidth: Datum,
+	},
+	// Controls persistence of user-driven changes in the view (projection and center). Defaults to `layout.uirevision`
+	uirevision: Datum,
+}
+
 export type Root = string | HTMLElement;
 
 export function newPlot(root: Root, data: Data[], layout?: Partial<Layout>, config?: Partial<Config>): Promise<PlotlyHTMLElement>;
@@ -261,7 +341,7 @@ export interface Layout {
 	'xaxis.autorange': boolean;
 	'yaxis.autorange': boolean;
 	ternary: {}; // TODO
-	geo: {}; // TODO
+	geo: GeoOpts;
 	mapbox: {}; // TODO
 	radialaxis: Partial<Axis>;
 	angularaxis: {}; // TODO
@@ -378,7 +458,7 @@ export interface SceneAxis extends Axis {
 }
 
 export interface ShapeLine {
-	color: string;
+	color: Color;
 	width: number;
 	dash: Dash;
 }
@@ -396,7 +476,7 @@ export interface Shape {
 	y0: Datum;
 	x1: Datum;
 	y1: Datum;
-	fillcolor: string;
+	fillcolor: Color;
 	opacity: number;
 	line: Partial<ShapeLine>;
 }
@@ -547,7 +627,7 @@ export interface PlotData {
 	textposition: "top left" | "top center" | "top right" | "middle left"
 	| "middle center" | "middle right" | "bottom left" | "bottom center" | "bottom right" | "inside";
 	fill: 'none' | 'tozeroy' | 'tozerox' | 'tonexty' | 'tonextx' | 'toself' | 'tonext';
-	fillcolor: string;
+	fillcolor: Color;
 	legendgroup: string;
 	name: string;
 	stackgroup: string;
@@ -574,6 +654,9 @@ export interface PlotData {
 	rotation: number;
 	theta: Datum[];
 	r: Datum[];
+	locationmode: string;
+	lat: Datum[];
+	lon: Datum[];
 }
 
 /**
@@ -858,8 +941,8 @@ export interface RangeSlider {
 	thickness: number;
 	range: [Datum, Datum];
 	borderwidth: number;
-	bordercolor: string;
-	bgcolor: string;
+	bordercolor: Color;
+	bgcolor: Color;
 }
 
 export interface RangeSelectorButton {
@@ -876,7 +959,7 @@ export interface RangeSelector extends Label {
 	xanchor: 'auto' | 'left' | 'center' | 'right';
 	y: number;
 	yanchor: 'auto' | 'top' | 'middle' | 'bottom';
-	activecolor: string;
+	activecolor: Color;
 	borderwidth: number;
 }
 
@@ -888,10 +971,10 @@ export interface Camera {
 
 export interface Label {
 	/** Sets the background color of all hover labels on graph. */
-	bgcolor: string;
+	bgcolor: Color;
 
 	/** Sets the border color of all hover labels on graph. */
-	bordercolor: string;
+	bordercolor: Color;
 
 	/** Sets the default hover label font used by all traces on the graph. */
 	font: Partial<Font>;
@@ -969,7 +1052,7 @@ export interface Annotations extends Label {
 	showarrow: boolean;
 
 	/** Sets the color of the annotation arrow. */
-	arrowcolor: string;
+	arrowcolor: Color;
 
 	/** Sets the end annotation arrow head style. */
 	arrowhead: number;
@@ -1183,7 +1266,7 @@ export interface Image {
 }
 
 export interface Scene {
-	bgcolor: string;
+	bgcolor: Color;
 	camera: Partial<Camera>;
 	domain: Partial<Domain>;
 	aspectmode: 'auto' | 'cube' | 'data' | 'manual';
